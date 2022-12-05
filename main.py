@@ -119,7 +119,3 @@ def get_all_temperatures(sensorId):
 
 if __name__ == "__main__":
     app.run(port=5001)
-
-#Giuliano Test 2
-
-#This is the querry after making connection to MongoDB
