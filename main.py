@@ -18,7 +18,7 @@ import os
 #Connecting to MongoDB
 client = pymongo.MongoClient("mongodb+srv://GMA:GMASeasonbaby123@iot2project.la8dvua.mongodb.net/?retryWrites=true&w=majority",
                              server_api=ServerApi('1'))
-db = client.ThreadMeasurements
+db = client.test
 
 if 'measurement' not in db.list_collection_names():
     db.create_collection("measurement",
@@ -48,7 +48,7 @@ def add_threadMeasurements_value(sensorId):
     data = request.json
     data.update({"timestamp": getTimeStamp(), "sensorId": sensorId})
 
-    db.ThreadMeasurements.insert_one(data)
+    db.measurement.insert_one(data)
 
     data["_id"] = str(data["_id"])
     data["timestamp"] = data["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
