@@ -25,6 +25,8 @@ if 'measurement' not in db.list_collection_names():
                          timeseries={'timeField': 'timestamp', 'metaField': 'sensorId', 'granularity': 'minutes'})
 
 
+
+
 def getTimeStamp():
     return dt.datetime.today().replace(microsecond=0)
 
