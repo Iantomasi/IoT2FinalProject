@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from flask_objectid_converter import ObjectIDConverter
 from pymongo import ReturnDocument
 from pymongo.server_api import ServerApi
-from Schemas import TemperatureSensorSchema
+from Schemas import UltraSonicSensorSchema
 from bson import json_util, ObjectId
 from flask_cors import CORS
 import datetime as dt
@@ -18,8 +18,8 @@ client = pymongo.MongoClient("mongodb+srv://GMA:GMASeasonbaby123@iot2project.la8
                              server_api=ServerApi('1'))
 db = client.test
 
-if 'weather' not in db.list_collection_names():
-    db.create_collection("weather",
+if 'threadMeasurements' not in db.list_collection_names():
+    db.create_collection("threadMeasurements",
                          timeseries={'timeField': 'timestamp', 'metaField': 'sensorId', 'granularity': 'minutes'})
 
 
@@ -37,9 +37,9 @@ app.config['DEBUG'] = True
 CORS(app)
 
 
-@app.route("/sensors/<int:sensorId>/temperatures", methods=["POST"])
-def add_temperature_value(sensorId):
-    error = TemperatureSensorSchema().validate(request.json)
+@app.route("/sensors/<int:sensorId>/threadMeasurements", methods=["POST"])
+def add_threadMeasurement_value(sensorId):
+    error = UltraSonicSensorSchema().validate(request.json)
     if error:
         return error, 400
 
@@ -53,8 +53,8 @@ def add_temperature_value(sensorId):
     return data
 
 
-@app.route("/sensors/<int:sensorId>/temperatures")
-def get_all_temperatures(sensorId):
+@app.route("/sensors/<int:sensorId>/threadMeasurements")
+def get_all_threadMeasurements(sensorId):
     start = request.args.get("start")
     end = request.args.get("end")
 
@@ -84,7 +84,7 @@ def get_all_temperatures(sensorId):
 
         query.update({"timestamp": {"$gte": start, "$lte": end}})
 
-    data = list(db.weather.aggregate([
+    data = list(db.iot2project.aggregate([
         {
             '$match': query
         }, {
@@ -93,7 +93,7 @@ def get_all_temperatures(sensorId):
                 'avgTemp': {
                     '$avg': '$temperature'
                 },
-                'temperatures': {
+                'threadMeasurements': {
                     '$push': {
                         'timestamp': '$timestamp',
                         'temperature': '$temperature'
@@ -109,8 +109,8 @@ def get_all_temperatures(sensorId):
             del data["_id"]
             data.update({"sensorId": sensorId})
 
-        for temp in data['temperatures']:
-            temp["timestamp"] = temp["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
+        for tMeasure in data['threadMeasurements']:
+            tMeasure["timestamp"] = tMeasure["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
 
         return data
     else:
@@ -120,6 +120,3 @@ def get_all_temperatures(sensorId):
 if __name__ == "__main__":
     app.run(port=5001)
 
-#Giuliano Test 2
-
-#This is the querry after making connection to MongoDB

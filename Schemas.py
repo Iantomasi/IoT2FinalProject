@@ -1,4 +1,4 @@
 from marshmallow import Schema, fields, validate
 
-class TemperatureSensorSchema(Schema):
+class UltraSonicSensorSchema(Schema):
     temperature = fields.Number(required=True)
