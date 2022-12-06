@@ -91,12 +91,12 @@ def get_all_threadMeasurements(sensorId):
             '$group': {
                 '_id': '$sensorId',
                 'avgTemp': {
-                    '$avg': 'threadMeasurement'
+                    '$avg': '$temperature'
                 },
                 'threadMeasurements': {
                     '$push': {
                         'timestamp': '$timestamp',
-                        'threadMeasurement': '$threadMeasurement'
+                        'temperature': '$temperature'
                     }
                 }
             }
@@ -120,5 +120,5 @@ def get_all_threadMeasurements(sensorId):
 if __name__ == "__main__":
     app.run(port=5001)
 
-#Test 2
+#Test
 
