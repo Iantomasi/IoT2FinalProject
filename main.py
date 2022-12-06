@@ -18,10 +18,10 @@ import os
 #Connecting to MongoDB
 client = pymongo.MongoClient("mongodb+srv://GMA:GMASeasonbaby123@iot2project.la8dvua.mongodb.net/?retryWrites=true&w=majority",
                              server_api=ServerApi('1'))
-db = client.test
+db = client.ThreadMeasurements
 
-if 'threadMeasurements' not in db.list_collection_names():
-    db.create_collection("threadMeasurements",
+if 'measurement' not in db.list_collection_names():
+    db.create_collection("measurement",
                          timeseries={'timeField': 'timestamp', 'metaField': 'sensorId', 'granularity': 'minutes'})
 
 
@@ -39,7 +39,7 @@ app.config['DEBUG'] = True
 CORS(app)
 
 
-@app.route("/sensors/<int:sensorId>/threadMeasurements", methods=["POST"])
+@app.route("/sensors/<int:sensorId>/measurement", methods=["POST"])
 def add_threadMeasurements_value(sensorId):
     error = UltraSonicSensorSchema().validate(request.json)
     if error:
@@ -48,14 +48,14 @@ def add_threadMeasurements_value(sensorId):
     data = request.json
     data.update({"timestamp": getTimeStamp(), "sensorId": sensorId})
 
-    db.IOT2Project.insert_one(data)
+    db.ThreadMeasurements.insert_one(data)
 
     data["_id"] = str(data["_id"])
     data["timestamp"] = data["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
     return data
 
 
-@app.route("/sensors/<int:sensorId>/threadMeasurements")
+@app.route("/sensors/<int:sensorId>/measurement", methods=["GET"])
 def get_all_threadMeasurements(sensorId):
     start = request.args.get("start")
     end = request.args.get("end")
@@ -86,19 +86,19 @@ def get_all_threadMeasurements(sensorId):
 
         query.update({"timestamp": {"$gte": start, "$lte": end}})
 
-    data = list(db.iot2project.aggregate([
+    data = list(db.ThreadMeasurements.aggregate([
         {
             '$match': query
         }, {
             '$group': {
                 '_id': '$sensorId',
                 'avgMeasurement': {
-                    '$avg': '$threadMeasurement'
+                    '$avg': '$measurement'
                 },
                 'threadMeasurements': {
                     '$push': {
                         'timestamp': '$timestamp',
-                        'threadMeasurement': '$threadMeasurement'
+                        'measurement': 'measurement'
                     }
                 }
             }
@@ -121,6 +121,4 @@ def get_all_threadMeasurements(sensorId):
 
 if __name__ == "__main__":
     app.run(port=5001)
-
-#Test 3
 
