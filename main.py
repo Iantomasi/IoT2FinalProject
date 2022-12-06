@@ -28,12 +28,11 @@ def getTimeStamp():
 
 
 app = Flask(__name__)
-# adding an objectid type for the URL fields instead of treating it as string
-# this is coming from a library we are using instead of building our own custom type
+
 app.url_map.converters['objectid'] = ObjectIDConverter
 
 app.config['DEBUG'] = True
-# making our API accessible by any IP
+
 CORS(app)
 
 
@@ -120,5 +119,5 @@ def get_all_threadMeasurements(sensorId):
 if __name__ == "__main__":
     app.run(port=5001)
 
-#Test
+
 
