@@ -90,13 +90,13 @@ def get_all_threadMeasurements(sensorId):
         }, {
             '$group': {
                 '_id': '$sensorId',
-                'avgTemp': {
-                    '$avg': '$temperature'
+                'avgMeasurement': {
+                    '$avg': '$threadMeasurement'
                 },
                 'threadMeasurements': {
                     '$push': {
                         'timestamp': '$timestamp',
-                        'temperature': '$temperature'
+                        'threadMeasurement': '$threadMeasurement'
                     }
                 }
             }
