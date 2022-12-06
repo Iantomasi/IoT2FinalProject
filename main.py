@@ -88,7 +88,7 @@ def get_all_threadMeasurements(sensorId):
 
         query.update({"timestamp": {"$gte": start, "$lte": end}})
 
-    data = list(db.ThreadMeasurements.aggregate([
+    data = list(db.measurement.aggregate([
         {
             '$match': query
         }, {
@@ -97,10 +97,10 @@ def get_all_threadMeasurements(sensorId):
                 'avgMeasurement': {
                     '$avg': '$measurement'
                 },
-                'threadMeasurements': {
-                    '$push': {
-                        'timestamp': '$timestamp',
-                        'measurement': 'measurement'
+            'threadMeasurements': {
+                '$push': {
+                    'timestamp': '$timestamp',
+                    'measurement': 'measurement'
                     }
                 }
             }
@@ -113,7 +113,7 @@ def get_all_threadMeasurements(sensorId):
             del data["_id"]
             data.update({"sensorId": sensorId})
 
-        for tMeasure in data['threadMeasurements']:
+        for tMeasure in data['measurement']:
             tMeasure["timestamp"] = tMeasure["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
 
         return data
