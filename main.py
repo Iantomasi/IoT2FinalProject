@@ -40,7 +40,7 @@ CORS(app)
 
 
 @app.route("/sensors/<int:sensorId>/threadMeasurements", methods=["POST"])
-def add_threadMeasurement_value(sensorId):
+def add_threadMeasurements_value(sensorId):
     error = UltraSonicSensorSchema().validate(request.json)
     if error:
         return error, 400
