@@ -90,17 +90,18 @@ def get_all_threadMeasurements(sensorId):
 
     data = list(db.measurement.aggregate([
         {
-            '$match': query
+             '$match': query
         }, {
             '$group': {
-                '_id': '$sensorId',
-                'avgMeasurement': {
+                '_id': '$sensorId', 'avgMeasurement': {
                     '$avg': '$measurement'
                 },
-            'threadMeasurements': {
-                '$push': {
-                    'timestamp': '$timestamp',
-                    'measurement': 'measurement'
+
+                'measurement': {
+                    '$push': {
+                        'timestamp': '$timestamp',
+                        'measurement':'$measurement',
+                        '_id': '$sensorId'
                     }
                 }
             }
