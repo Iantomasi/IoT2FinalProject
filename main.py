@@ -8,12 +8,14 @@ from bson import json_util, ObjectId
 from flask_cors import CORS
 import datetime as dt
 
+
 # loading private connection information from environment variables
 from dotenv import load_dotenv
 
 load_dotenv()
 import os
 
+#Connecting to MongoDB
 client = pymongo.MongoClient("mongodb+srv://GMA:GMASeasonbaby123@iot2project.la8dvua.mongodb.net/?retryWrites=true&w=majority",
                              server_api=ServerApi('1'))
 db = client.test
