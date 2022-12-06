@@ -93,11 +93,11 @@ def get_all_threadMeasurements(sensorId):
              '$match': query
         }, {
             '$group': {
-                '_id': '$sensorId', 'avgMeasurement': {
+                '_id': '$sensorId','avgMeasurement': {
                     '$avg': '$measurement'
                 },
 
-                'measurement': {
+                '_id': '$sensorId','measurement': {
                     '$push': {
                         'timestamp': '$timestamp',
                         'measurement':'$measurement',
@@ -105,7 +105,9 @@ def get_all_threadMeasurements(sensorId):
                     }
                 }
             }
-        }
+        },
+
+
     ]))
 
     if data:
@@ -120,6 +122,7 @@ def get_all_threadMeasurements(sensorId):
         return data
     else:
         return {"error": "id not found"}, 404
+
 
 
 if __name__ == "__main__":
