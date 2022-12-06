@@ -48,7 +48,7 @@ def add_threadMeasurements_value(sensorId):
     data = request.json
     data.update({"timestamp": getTimeStamp(), "sensorId": sensorId})
 
-    db.weather.insert_one(data)
+    db.IOT2Project.insert_one(data)
 
     data["_id"] = str(data["_id"])
     data["timestamp"] = data["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
