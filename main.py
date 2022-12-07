@@ -93,14 +93,18 @@ def get_all_threadMeasurements(sensorId):
              '$match': query
         }, {
             '$group': {
-                '_id': '$sensorId','avgMeasurement': {
+                '_id': '$sensorId',
+                'avgMeasurement': {
                     '$avg': '$measurement'
                 },
-
-                '_id': '$sensorId','measurement': {
+                '_id': '$sensorId',
+                'measurementCount': {
+                    '$count': {}
+                },
+                'measurement': {
                     '$push': {
                         'timestamp': '$timestamp',
-                        'measurement':'$measurement',
+                        'measurement': '$measurement',
                         '_id': '$sensorId'
                     }
                 }
