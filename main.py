@@ -40,40 +40,6 @@ app.config['DEBUG'] = True
 # making our API accessible by any IP
 CORS(app)
 
-@app.route("/measurement")
-def get_all_measurements():
-    query = db.collection.find()
-    thMeasurementList = {}
-
-    for x in query:
-        thMeasurementList = {'measurements': x}
-
-    data = list(db.measurement.aggregate([
-        {
-            '$match': thMeasurementList
-        }, {
-            '$group': {
-                '_id': '$sensorId',
-                'avgMeasurement': {
-                    '$avg': '$measurement'
-                },
-                '_id': '$sensorId',
-                'measurementCount': {
-                    '$count': {}
-                },
-                'measurement': {
-                    '$push': {
-                        'timestamp': '$timestamp',
-                        'measurement': '$measurement',
-                        '_id': '$sensorId'
-                    }
-                }
-            }
-        }
-    ]))
-    return data
-
-
 @app.route("/sensors/<int:sensorId>/measurement", methods=["POST"])
 def add_threadMeasurements_value(sensorId):
     error = UltraSonicSensorSchema().validate(request.json)
@@ -88,7 +54,6 @@ def add_threadMeasurements_value(sensorId):
     data["_id"] = str(data["_id"])
     data["timestamp"] = data["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
     return data
-
 
 @app.route("/sensors/<int:sensorId>/measurement", methods=["GET"])
 def get_all_threadMeasurements(sensorId):
@@ -157,6 +122,39 @@ def get_all_threadMeasurements(sensorId):
         return data
     else:
         return {"error": "id not found"}, 404
+
+@app.route("/measurement")
+def get_all_measurements():
+    query = db.collection.find()
+    thMeasurementList = {}
+
+    for x in query:
+        thMeasurementList = {'measurements': x}
+
+    data = list(db.measurement.aggregate([
+        {
+            '$match': thMeasurementList
+        }, {
+            '$group': {
+                '_id': '$sensorId',
+                'avgMeasurement': {
+                    '$avg': '$measurement'
+                },
+                '_id': '$sensorId',
+                'measurementCount': {
+                    '$count': {}
+                },
+                'measurement': {
+                    '$push': {
+                        'timestamp': '$timestamp',
+                        'measurement': '$measurement',
+                        '_id': '$sensorId'
+                    }
+                }
+            }
+        }
+    ]))
+    return data
 
 
 
