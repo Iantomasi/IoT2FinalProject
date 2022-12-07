@@ -7,7 +7,9 @@ from Schemas import UltraSonicSensorSchema
 from bson import json_util, ObjectId
 from flask_cors import CORS
 import datetime as dt
-import ArduinoEmulator as emulator
+
+
+# loading private connection information from environment variables
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,51 +20,45 @@ client = pymongo.MongoClient("mongodb+srv://GMA:GMASeasonbaby123@iot2project.la8
                              server_api=ServerApi('1'))
 db = client.test
 
+if 'measurement' not in db.list_collection_names():
+    db.create_collection("measurement",
+                         timeseries={'timeField': 'timestamp', 'metaField': 'sensorId', 'granularity': 'minutes'})
 
-app = Flask(__name__)
 
-app.url_map.converters['objectid'] = ObjectIDConverter
 
-app.config['DEBUG'] = True
 
-CORS(app)
 def getTimeStamp():
     return dt.datetime.today().replace(microsecond=0)
 
-@app.route("/measurement")
-def get_all_measurements():
-    query = emulator.db.collection.find()
-    thMeasurementList = {}
 
-    for x in query:
-        thMeasurementList = {'measurements': x}
+app = Flask(__name__)
+# adding an objectid type for the URL fields instead of treating it as string
+# this is coming from a library we are using instead of building our own custom type
+app.url_map.converters['objectid'] = ObjectIDConverter
 
-    data = list(emulator.db.measurement.aggregate([
-        {
-            '$match': thMeasurementList
-        }, {
-            '$group': {
-                '_id': '$sensorId',
-                'avgMeasurement': {
-                    '$avg': '$measurement'
-                },
-                '_id': '$sensorId',
-                'measurementCount': {
-                    '$count': {}
-                },
-                'measurement': {
-                    '$push': {
-                        'timestamp': '$timestamp',
-                        'measurement': '$measurement',
-                        '_id': '$sensorId'
-                    }
-                }
-            }
-        }
-    ]))
+app.config['DEBUG'] = True
+# making our API accessible by any IP
+CORS(app)
+
+
+@app.route("/sensors/<int:sensorId>/measurement", methods=["POST"])
+def add_threadMeasurements_value(sensorId):
+    error = UltraSonicSensorSchema().validate(request.json)
+    if error:
+        return error, 400
+
+    data = request.json
+    data.update({"timestamp": getTimeStamp(), "sensorId": sensorId})
+
+    db.measurement.insert_one(data)
+
+    data["_id"] = str(data["_id"])
+    data["timestamp"] = data["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
     return data
-@app.route("/sensors/<int:sensorId>/measurement")
-def get_measurement_by_id(sensorId):
+
+
+@app.route("/sensors/<int:sensorId>/measurement", methods=["GET"])
+def get_all_threadMeasurements(sensorId):
     start = request.args.get("start")
     end = request.args.get("end")
 
@@ -92,7 +88,7 @@ def get_measurement_by_id(sensorId):
 
         query.update({"timestamp": {"$gte": start, "$lte": end}})
 
-    data = list(emulator.db.measurement.aggregate([
+    data = list(db.measurement.aggregate([
         {
              '$match': query
         }, {
@@ -131,23 +127,5 @@ def get_measurement_by_id(sensorId):
 
 
 
-@app.route("/sensors/<int:sensorId>/measurement", methods=["POST"])
-def add_measurement_value(sensorId):
-    error = UltraSonicSensorSchema().validate(request.json)
-    if error:
-        return error, 400
-
-    data = request.json
-    data.update({"timestamp": getTimeStamp(), "sensorId": sensorId})
-
-    emulator.db.measurements.insert_one(data)
-
-    data["_id"] = str(data["_id"])
-    data["timestamp"] = data["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
-    return data
-
 if __name__ == "__main__":
     app.run(port=5001)
-
-    #Fixed code
-
