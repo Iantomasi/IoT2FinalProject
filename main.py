@@ -41,6 +41,7 @@ app.config['DEBUG'] = True
 CORS(app)
 
 
+
 @app.route("/sensors/<int:sensorId>/measurement", methods=["POST"])
 def add_threadMeasurements_value(sensorId):
     error = UltraSonicSensorSchema().validate(request.json)
