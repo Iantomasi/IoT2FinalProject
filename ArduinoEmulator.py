@@ -17,12 +17,13 @@ if 'measurement' not in db.list_collection_names():
 
 if __name__ == "__main__":
     while isSensorOn:
-        measurement = 0
-        sensorID = 7
-        number = 2
+        measurement = number
+        sensorID = 23
+        number+=2
         db.measurement.insert_one({
             'timestamp': dt.datetime.now(),
             'sensorId': sensorID,
             'measurement': measurement
         })
-        sleep(5)
+        sleep(3)
+
