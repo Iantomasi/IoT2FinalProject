@@ -40,6 +40,38 @@ app.config['DEBUG'] = True
 # making our API accessible by any IP
 CORS(app)
 
+@app.route("/measurement")
+def get_all_measurements():
+    query = db.collection.find()
+    thMeasurementList = {}
+
+    for x in query:
+        thMeasurementList = {'measurements': x}
+
+    data = list(db.measurement.aggregate([
+        {
+            '$match': thMeasurementList
+        }, {
+            '$group': {
+                '_id': '$sensorId',
+                'avgMeasurement': {
+                    '$avg': '$measurement'
+                },
+                '_id': '$sensorId',
+                'measurementCount': {
+                    '$count': {}
+                },
+                'measurement': {
+                    '$push': {
+                        'timestamp': '$timestamp',
+                        'measurement': '$measurement',
+                        '_id': '$sensorId'
+                    }
+                }
+            }
+        }
+    ]))
+    return data
 
 
 @app.route("/sensors/<int:sensorId>/measurement", methods=["POST"])
