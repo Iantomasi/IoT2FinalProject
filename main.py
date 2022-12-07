@@ -106,8 +106,6 @@ def get_all_threadMeasurements(sensorId):
                 }
             }
         },
-
-
     ]))
 
     if data:
