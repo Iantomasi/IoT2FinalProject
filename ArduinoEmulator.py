@@ -1,5 +1,10 @@
 import pymongo
 import datetime as dt
+import random
+
+client = pymongo.MongoClient()
+import pymongo
+import datetime as dt
 from time import sleep
 
 
