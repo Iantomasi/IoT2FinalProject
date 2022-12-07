@@ -8,11 +8,8 @@ from bson import json_util, ObjectId
 from flask_cors import CORS
 import datetime as dt
 import ArduinoEmulator as emulator
-
-
-# loading private connection information from environment variables
 from dotenv import load_dotenv
-"""""""""
+
 load_dotenv()
 import os
 
@@ -21,14 +18,13 @@ client = pymongo.MongoClient("mongodb+srv://GMA:GMASeasonbaby123@iot2project.la8
                              server_api=ServerApi('1'))
 db = client.test
 
-"""""
+
 app = Flask(__name__)
-# adding an objectid type for the URL fields instead of treating it as string
-# this is coming from a library we are using instead of building our own custom type
+
 app.url_map.converters['objectid'] = ObjectIDConverter
 
 app.config['DEBUG'] = True
-# making our API accessible by any IP
+
 CORS(app)
 def getTimeStamp():
     return dt.datetime.today().replace(microsecond=0)
