@@ -55,12 +55,12 @@ def add_threadMeasurements_value(sensorId):
     data["timestamp"] = data["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
     return data
 
-@app.route("/sensors/<int:sensorId>/measurement", methods=["GET"])
-def get_all_threadMeasurements(sensorId):
+@app.route("/sensors/<int:sensorId>/<int:measurement>", methods=["GET"])
+def get_all_threadMeasurements(sensorId, measurement):
     start = request.args.get("start")
     end = request.args.get("end")
 
-    query = {"sensorId": sensorId}
+    query = {"sensorId": sensorId, "measurement": measurement }
     if start is None and end is not None:
         try:
             end = dt.datetime.strptime(end, "%Y-%m-%dT%H:%M:%S")
@@ -90,24 +90,28 @@ def get_all_threadMeasurements(sensorId):
         {
              '$match': query
         }, {
-            '$group': {
-                '_id': '$sensorId',
-                'avgMeasurement': {
-                    '$avg': '$measurement'
-                },
-                '_id': '$sensorId',
-                'measurementCount': {
-                    '$count': {}
-                },
-                'measurement': {
-                    '$push': {
-                        'timestamp': '$timestamp',
-                        'measurement': '$measurement',
-                        '_id': '$sensorId'
+                '$group': {
+                    '_id': '$sensorId',
+                    'measurement':'$measurement',
+                        'measurement':{
+
+                    },
+                    '_id': '$sensorId',
+                    'measurement': '$measurement',
+                    'measurementCount': {
+                        '$count': {}
+                    },
+                    'measurement': {
+                        '$push': {
+                            'timestamp': '$timestamp',
+                            'measurement': '$measurement',
+                            '_id': '$sensorId'
+                        }
+
                     }
+
                 }
             }
-        }
     ]))
 
     if data:
