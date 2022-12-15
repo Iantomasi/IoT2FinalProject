@@ -98,7 +98,7 @@ def get_all_threadMeasurements(sensorId, measurement):
                     },
                     '_id': '$sensorId',
                     'measurement': '$measurement',
-                    'measurementCount': {
+                    'measurementMatch': {
                         '$count': {}
                     },
                     'measurement': {
