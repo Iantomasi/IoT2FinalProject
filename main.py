@@ -162,7 +162,6 @@ def get_all_measurements():
     return data
 
 
-#test new proj
 
 if __name__ == "__main__":
     app.run(port=5001)
