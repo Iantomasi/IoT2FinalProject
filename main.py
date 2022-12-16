@@ -127,7 +127,7 @@ def get_all_threadMeasurements(sensorId, measurement):
     else:
         return {"error": "id not found"}, 404
 
-@app.route("/measurement")
+@app.route("/sensors/measurements")
 def get_all_measurements():
     query = db.collection.find()
     thMeasurementList = {}
