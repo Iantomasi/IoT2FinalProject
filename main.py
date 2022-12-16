@@ -55,7 +55,7 @@ def add_threadMeasurements_value(sensorId):
     data["timestamp"] = data["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
     return data
 
-@app.route("/sensors/<int:sensorId>/<int:measurement>", methods=["GET"])
+@app.route("/sensors/<int:sensorId>/measurement/<int:measurement>", methods=["GET"])
 def get_all_threadMeasurements(sensorId, measurement):
     start = request.args.get("start")
     end = request.args.get("end")
