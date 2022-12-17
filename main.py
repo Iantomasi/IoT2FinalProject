@@ -166,4 +166,3 @@ def get_all_measurements():
 if __name__ == "__main__":
     app.run(port=5001)
 
-#Minseok here
