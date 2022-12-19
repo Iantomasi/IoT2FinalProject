@@ -142,10 +142,6 @@ def get_all_measurements():
         }, {
             '$group': {
                 '_id': '$sensorId',
-                'avgMeasurement': {
-                    '$avg': '$measurement'
-                },
-                '_id': '$sensorId',
                 'measurementCount': {
                     '$count': {}
                 },
