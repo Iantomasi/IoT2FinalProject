@@ -157,20 +157,6 @@ def get_all_measurements():
     ]))
     return data
 
-@app.route("/sensors/<int:sensorId>/measurement/<int:measurement>", methods=["POST"])
-def add_threadMeasurements_value(sensorId,measurement):
-    error = UltraSonicSensorSchema().validate(request.json)
-    if error:
-        return error, 400
-
-    data = request.json
-    data.update({"timestamp": getTimeStamp(), "sensorId": sensorId, "measurement": measurement })
-
-    db.measurement.insert_one(data)
-
-    data["_id"] = str(data["_id"])
-    data["timestamp"] = data["timestamp"].strftime("%Y-%m-%dT%H:%M:%S")
-    return data
 
 
 if __name__ == "__main__":
