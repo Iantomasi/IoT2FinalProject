@@ -40,7 +40,7 @@ app.config['DEBUG'] = True
 # making our API accessible by any IP
 CORS(app)
 
-@app.route("/sensors/<int:sensorId>/measurement", methods=["POST"])
+@app.route("/sensors/<int:sensorId>", methods=["POST"])
 def add_threadMeasurements_value(sensorId):
     error = UltraSonicSensorSchema().validate(request.json)
     if error:
